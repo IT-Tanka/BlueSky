@@ -1,0 +1,81 @@
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+}
+
+body {
+  line-height: 1;
+}
+
+ol, ul {
+  list-style: none;
+}
+
+img, picture, video, canvas {
+  display: block;
+  max-width: 100%;
+}
+
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+input, button, textarea, select {
+  font: inherit;
+}
+
+.container{
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 15px;
+}
+
+button {
+  border-radius: 5px;
+  font-size: 12px;
+  border: none;
+  background-color: transparent;
+  cursor: pointer;
+}
+input{
+  height: 30px;
+  padding: 5px;
+  border:1px solid lightblue;
+}
+
+a {
+  text-decoration: none;
+}
+.router-link-active.nav-link {
+  color:aqua;
+  
+}
+.app{
+  min-height: 100vh;
+  background: url(./sky.jpg)  ;
+}
+.nav-link{
+  color:white;
+}
+.weather-blocks-container {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+@media (max-width:768px) {
+  .weather-blocks-container {
+      grid-template-columns: 1fr;
+  }
+}
+.favorite-page .add-to-fav__btn {
+  display: none;
+}
