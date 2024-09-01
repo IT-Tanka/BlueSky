@@ -49,7 +49,7 @@ export default {
       isHourly: true,
       isFavorite: false,
       favorites: JSON.parse(localStorage.getItem('favorites')) || [],
-      isLoading: true,
+      isLoading: false,
     };
   },
   mounted() {
