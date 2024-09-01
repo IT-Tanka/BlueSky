@@ -15,8 +15,8 @@
     <div class="weather-block" v-if="!isLoading && weatherData && weatherData.forecast">
       <div v-if="weatherData" class="weather-card__info">
         <h2>{{ weatherData.cityName }}</h2>
-        <p>{{ weatherData.description }}</p>
-        <p>{{ weatherData.temp }} °C</p>
+        <img :src="weatherIconUrl" :alt="weatherData.description || 'weather icon'" />
+        <p class="weather-card__temp">{{ weatherData.temp }} °C</p>
       </div>
       <TempChart :forecastData="weatherData.forecast" :isHourly="isHourly" @update:isHourly="isHourly = $event" />
     </div>
@@ -46,6 +46,7 @@ export default {
   data() {
     return {
       weatherData: null,
+      weatherIconUrl: '',
       isHourly: true,
       isFavorite: false,
       favorites: JSON.parse(localStorage.getItem('favorites')) || [],
@@ -62,12 +63,14 @@ export default {
         this.isLoading = true;
         const weather = await getWeatherByCity(city);
         const forecast = await getWeatherForecastByCoords(weather.coord.lat, weather.coord.lon);
+        const iconCode = weather.weather[0].icon;
         this.weatherData = {
           cityName: weather.name,
           description: weather.weather[0].description,
           temp: Math.round(weather.main.temp - 273.15),
           forecast: forecast.list,
         };
+        this.weatherIconUrl = `https://openweathermap.org/img/wn/${iconCode}@2x.png`;
       } catch (error) {
         console.error('Error retrieving weather data:', error);
       } finally {
@@ -125,7 +128,9 @@ export default {
   align-items: center;
 
 }
-
+.weather-card__temp{
+  font-size: 18px;
+}
 .weather-card.favorite .weather-card__btn {
   color: aqua;
 }

@@ -1,5 +1,5 @@
 <template>
-    <div class="city-input__block">
+    <div class="city-input__block" ref="cityInputBlock">
         <input type="text" v-model="query" @input="fetchCities" :placeholder="$t('Enter city')" />
         <ul v-if="cities.length > 0">
             <li v-for="city in cities" :key="city.id" @click="selectCity(city)">
@@ -17,10 +17,26 @@ export default {
         return {
             query: '',
             cities: [],
+            fetchCitiesDebounced: this.debounce(this.fetchCitiesApi, 300)
         };
     },
     methods: {
+        debounce(func, wait) {
+            let timeout;
+            return function(...args) {
+                const context = this;
+                clearTimeout(timeout);
+                timeout = setTimeout(() => func.apply(context, args), wait);
+            };
+        },
         async fetchCities() {
+            if (this.query.length < 3) {
+                this.cities = [];
+                return;
+            }
+            this.fetchCitiesDebounced();
+        },
+        async fetchCitiesApi() {
             if (this.query.length < 3) {
                 this.cities = [];
                 return;
@@ -29,14 +45,25 @@ export default {
                 const response = await getCity(this.query);
                 this.cities = response.list;
             } catch (error) {
-                console.error('Ошибка при загрузке городов:', error);
+                console.error('Error loading cities:', error);
             }
         },
         selectCity(city) {
             this.$emit('city-selected', city);
             this.query = `${city.name}, ${city.sys.country}`;
             this.cities = [];
+        },
+        handleClickOutside(event) {
+            if (!this.$refs.cityInputBlock.contains(event.target)) {
+                this.cities = [];
+            }
         }
+    },
+    mounted() {
+        document.addEventListener('click', this.handleClickOutside);
+    },
+    beforeDestroy() {
+        document.removeEventListener('click', this.handleClickOutside);
     }
 };
 </script>

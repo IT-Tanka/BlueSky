@@ -23,28 +23,6 @@ export default {
 </script>
 
 <style scoped>
-.modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.6);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-}
-
-.modal-content {
-    background: #fff;
-    padding: 20px;
-    border-radius: 8px;
-    text-align: center;
-    position: relative;
-    width: 400px;
-}
-
 .modal-close {
     position: absolute;
     top: 10px;
@@ -54,7 +32,7 @@ export default {
     font-size: 24px;
     cursor: pointer;
     color: #333;
-}
+} 
 
 .modal-actions {
     margin-top: 20px;
@@ -71,7 +49,7 @@ export default {
 }
 
 .modal-cancel {
-    background: #f44336;
+    background: #e9ae50;
     color: #fff;
     border: none;
     padding: 10px 20px;
@@ -80,10 +58,4 @@ export default {
     font-size: 16px;
 }
 
-@media (max-width:425px) {
-    .modal-content {
-        width: 330px;
-    }
-
-}
 </style>

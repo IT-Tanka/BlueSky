@@ -67,7 +67,7 @@ export default {
             this.$root.showModalForRemoval(city, this.removeBlock);
         },
 
-        showLimitExceededModal() { 
+        showLimitExceededModal() {
             this.isLimitExceeded = true;
         },
 
@@ -80,7 +80,10 @@ export default {
         },
 
         removeBlock(city) {
-            this.weatherBlocks = this.weatherBlocks.filter(blockCity => blockCity !== city);
+            const index = this.weatherBlocks.findIndex(blockCity => blockCity === city);
+            if (index !== -1) {
+                this.weatherBlocks.splice(index, 1);
+            }
 
         },
     }

@@ -5,8 +5,9 @@
     "Enter city":"enter city name",
     "favorites":"Favorites",
     "Add Weather Block": "Add Weather Block",
-    "confirmationMessage": "Are you sure you want to remove this item?",
+    "confirmationMessage": "Are you sure you want to remove this city?",
     "confirm": "Confirm",
     "cancel": "Cancel",
-    "limitExceeded":"You have reached the limit of favorite cities. You can add no more than 5 cities to favorites. Delete one of the favorite cities to add a new one."
+    "limitExceeded1":"You cannot add more than 5 cities to your favorites.",
+    "limitExceeded2":"Delete one of the favorite cities to add a new one ;)"
 }

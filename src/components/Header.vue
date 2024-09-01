@@ -41,7 +41,7 @@ export default {
 
 <style scoped>
 .header{
-  background-color: green;
+  background-color: rgba(0, 128, 0, 0.268);
 }
 
 .header__container{
@@ -77,7 +77,7 @@ export default {
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 5px;
+    gap: 1px;
   }
 }
 </style>
