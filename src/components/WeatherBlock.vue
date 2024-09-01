@@ -1,18 +1,20 @@
 <template>
+  
   <div :class="['weather-card', { favorite: isFavorite }]">
     <div class="weather-card__btns">
-      <button v-if="weatherData && weatherData.forecast" class="weather-card__btn add-to-fav__btn" @click="toggleIsFavorite">
+      <button v-if="weatherData && weatherData.forecast" :disabled="isLoading" class="weather-card__btn add-to-fav__btn"
+        @click="toggleIsFavorite">
         <IconAddToFavorite />
       </button>
-      <button @click="$emit('request-remove', city, removeBlock)">
+      <button :disabled="isLoading" @click="$emit('request-remove', city, removeBlock)">
         <IconDelete />
       </button>
     </div>
-    <slot name="city-input"></slot>
-
-    <div class="weather-block" v-if="weatherData && weatherData.forecast">
+    <slot v-if="!isLoading" name="city-input"></slot>
+    <Preloader :visible="isLoading" />
+    <div class="weather-block" v-if="!isLoading && weatherData && weatherData.forecast">
       <div v-if="weatherData" class="weather-card__info">
-        <h2>{{ weatherData.cityName }}</h2>  
+        <h2>{{ weatherData.cityName }}</h2>
         <p>{{ weatherData.description }}</p>
         <p>{{ weatherData.temp }} °C</p>
       </div>
@@ -26,6 +28,7 @@ import { getWeatherByCity, getWeatherForecastByCoords } from '../api/weather';
 import IconAddToFavorite from './icons/IconAddToFavorite.vue';
 import IconDelete from './icons/IconDelete.vue';
 import TempChart from './TempChart.vue';
+import Preloader from './Preloader.vue';
 
 export default {
   props: {
@@ -38,6 +41,7 @@ export default {
     IconAddToFavorite,
     IconDelete,
     TempChart,
+    Preloader
   },
   data() {
     return {
@@ -45,6 +49,7 @@ export default {
       isHourly: true,
       isFavorite: false,
       favorites: JSON.parse(localStorage.getItem('favorites')) || [],
+      isLoading: true,
     };
   },
   mounted() {
@@ -54,6 +59,7 @@ export default {
   methods: {
     async fetchWeather(city) {
       try {
+        this.isLoading = true;
         const weather = await getWeatherByCity(city);
         const forecast = await getWeatherForecastByCoords(weather.coord.lat, weather.coord.lon);
         this.weatherData = {
@@ -64,7 +70,9 @@ export default {
         };
       } catch (error) {
         console.error('Error retrieving weather data:', error);
-      }
+      } finally {
+      this.isLoading = false;
+    }
     },
 
     toggleIsFavorite() {
@@ -109,15 +117,16 @@ export default {
     height: 40px;
   }
 }
-.weather-card__info{
+
+.weather-card__info {
   display: flex;
   justify-content: flex-start;
   gap: 20px;
   align-items: center;
 
 }
+
 .weather-card.favorite .weather-card__btn {
   color: aqua;
 }
-
 </style>

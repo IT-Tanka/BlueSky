@@ -65,6 +65,12 @@ a {
 .nav-link{
   color:white;
 }
+.weather-card{
+  position: relative;
+}
+.preloader{
+  position: absolute;
+}
 .weather-blocks-container {
   display: grid;
   grid-template-columns: repeat(2, 1fr);

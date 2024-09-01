@@ -11,7 +11,7 @@
 </template>
 
 <script>
-import WeatherBlock from '../components/WeatherBlock.vue'
+import WeatherBlock from '../components/WeatherBlock.vue';
 
 export default {
     components: {

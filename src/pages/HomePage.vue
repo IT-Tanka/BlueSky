@@ -21,7 +21,7 @@
 import WeatherBlock from '../components/WeatherBlock.vue';
 import IconAddBlock from '../components/icons/IconAddBlock.vue';
 import CityInput from '../components/CityInput.vue';
-import ModalLimitExceeded from '../components/ModalLimitExceeded.vue'
+import ModalLimitExceeded from '../components/ModalLimitExceeded.vue';
 import { getCityByIP } from '../api/weather';
 
 export default {
@@ -29,7 +29,7 @@ export default {
         WeatherBlock,
         IconAddBlock,
         CityInput,
-        ModalLimitExceeded 
+        ModalLimitExceeded,
     },
     data() {
         return {
