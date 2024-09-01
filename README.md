@@ -3,7 +3,7 @@
 ### **"BlueSky"** is a web application for tracking weather
 
 This application is utilizing the OpenWeatherMap API. The application allows users to monitor current weather in various cities, view temperature charts by hours and days, and manage favorite cities. It does not use CSS frameworks or UI libraries and supports multilingual functionality (English and Ukrainian).
-
+ ![](blue_sky_screen.png)
 ### Key Features:
 
 1. **City Autocomplete Input:**
