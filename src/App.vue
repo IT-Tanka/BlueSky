@@ -1,12 +1,12 @@
 <template>
   <div class="app">
     <Header />
-    <main>
-      <router-view
-        @request-remove="showRemoveModal"
-        @limit-exceeded="showLimitModal"
-        @error="showErrorModal"
-      />
+    <main class="main-content">
+      <router-view v-slot="{ Component }">
+        <transition name="page-fade" mode="out-in">
+          <component :is="Component" @request-remove="showRemoveModal" @error="showErrorModal" />
+        </transition>
+      </router-view>
     </main>
     <Modal
       :is-visible="modalState.isVisible"
@@ -110,5 +110,29 @@ export default {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+}
+
+.main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100vh - 80px); /* Adjust based on header height */
+}
+
+.page-fade-enter-active,
+.page-fade-leave-active {
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.page-fade-enter-from,
+.page-fade-leave-to {
+  opacity: 0;
+  transform: translateY(10px); /* Reduced shift for subtler effect */
+}
+
+.page-fade-enter-to,
+.page-fade-leave-from {
+  opacity: 1;
+  transform: translateY(0);
 }
 </style>

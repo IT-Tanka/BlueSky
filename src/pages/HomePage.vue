@@ -420,7 +420,7 @@ td img {
 }
 
 .addition__point {
-  color: rgb(242, 152, 50);
+  color: #e9ae50;
   font-size: 16px;
 }
 
