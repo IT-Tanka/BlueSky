@@ -1,12 +1,15 @@
 <template>
-    <main class="favorite-page">
-        <div class="container">
-            <transition-group name="fade" tag="div" class="weather-blocks-container">
-                <WeatherBlock v-for="(city, index) in weatherBlocks" :key="city" :city="city" @remove="removeBlock"
-                    @request-remove="showModalForRemoval" />
-            </transition-group>
-        </div>
-    </main>
+  <main class="favorite-page">
+    <div class="container">
+      <transition-group v-if="weatherBlocks.length" name="fade" tag="div" class="weather-blocks-container">
+        <WeatherBlock v-for="(city, index) in weatherBlocks" :key="city" :city="city" @remove="removeBlock"
+          @request-remove="showModalForRemoval" />
+      </transition-group>
+      <div v-else class="empty-favorites">
+        <p class="empty-favorites__message">{{ $t('No favorite cities message') }}</p>
+      </div>
+    </div>
+  </main>
 </template>
 
 <script>
@@ -38,7 +41,16 @@ export default {
     padding-top: 30px;
     padding-bottom: 30px;
 }
-
+.empty-favorites {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  min-height: 50vh;
+  color:white;
+  font-size: 25px; 
+}
 .fade-enter-active,
 .fade-leave-active {
     transition: opacity 0.5s ease, transform 0.5s ease;

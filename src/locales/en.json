@@ -75,5 +75,6 @@
     "dust": "dust",
     "volcanic ash": "volcanic ash",
     "squalls": "squalls",
-    "tornado": "tornado"
+    "tornado": "tornado",
+    "No favorite cities message": "You have no favorite cities yet. You can add them on the main page."
 }

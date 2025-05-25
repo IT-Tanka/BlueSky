@@ -17,14 +17,12 @@
           </div>
           <div class="weather-card__info">
             <h2>{{ weatherData.cityName }}</h2>
-
             <img :src="weatherIconUrl" :alt="weatherData.description || 'weather icon'" />
             <p class="weather-card__temp">{{ weatherData.temp }} °C</p>
-
             <ul class="addition-info">
-              <li> <span class="addition__point">{{ $t('Humidity') }}:</span> {{ additionalData.humidity }}%</li>
-              <li><span class="addition__point">{{ $t('Pressure') }}:</span> {{ additionalData.pressure }}hPa</li>
-              <li><span class="addition__point">{{ $t('Wind Speed') }}: </span> {{ additionalData.windSpeed }}m/s</li>
+              <li><span class="addition__point">{{ $t('Humidity') }}:</span> {{ weatherData.humidity }}%</li>
+              <li><span class="addition__point">{{ $t('Pressure') }}:</span> {{ weatherData.pressure }}hPa</li>
+              <li><span class="addition__point">{{ $t('Wind Speed') }}:</span> {{ weatherData.windSpeed }}m/s</li>
             </ul>
           </div>
         </div>
@@ -54,7 +52,7 @@
               <tr v-for="item in weeklyForecast" :key="item.date">
                 <td>{{ item.date }}</td>
                 <td>{{ item.temp }} °C</td>
-               <td class="table__description">{{ $t(item.description) }}</td>
+                <td class="table__description">{{ translatedDescriptions[item.description] || item.description }}</td>
                 <td><img :src="getIconUrl(item.iconCode)" :alt="item.description" /></td>
               </tr>
             </tbody>
@@ -70,13 +68,14 @@
       <template #content>
         <CityInput v-if="state.modalState.type === 'add-city'" @city-selected="handleCitySelected"
           @cancel="handleModalCancel" @error="showErrorModal" />
+        <div v-else-if="state.modalState.type === 'error'">{{ state.modalState.data.message }}</div>
       </template>
     </Modal>
   </main>
 </template>
 
 <script>
-import { reactive } from 'vue';
+import { reactive, computed } from 'vue';
 import { useLanguageStore } from '../stores/language';
 import IconAddBlock from '../components/icons/IconAddBlock.vue';
 import IconAddToFavorite from '../components/icons/IconAddToFavorite.vue';
@@ -115,7 +114,6 @@ export default {
       weatherData: null,
       hourlyForecast: [],
       weeklyForecast: [],
-      additionalData: {},
       isLoading: false,
       currentCity: null,
       weatherIconUrl: '',
@@ -123,6 +121,7 @@ export default {
       favorites: JSON.parse(localStorage.getItem('favorites')) || [],
       currentTime: new Date(),
       timeInterval: null,
+      translatedDescriptions: {}, // Кэш для переводов описаний погоды
     };
   },
   computed: {
@@ -135,6 +134,7 @@ export default {
     this.updateTime();
     this.timeInterval = setInterval(this.updateTime, 60000);
     this.loadWeatherData();
+    setInterval(() => weatherService.clearCache(), 30 * 60 * 1000); // Очистка кэша каждые 30 минут
   },
   beforeUnmount() {
     if (this.timeInterval) clearInterval(this.timeInterval);
@@ -150,7 +150,8 @@ export default {
     '$i18n.locale': {
       handler(newLocale) {
         if (this.weatherData) {
-          this.loadWeatherData(); // Reload to update weekly forecast dates
+          this.updateWeeklyForecastDates(newLocale);
+          this.updateTranslatedDescriptions();
         }
       },
     },
@@ -188,7 +189,7 @@ export default {
           console.warn('Home: No valid hourly forecast data after filtering');
         }
         this.weeklyForecast = await weatherService.getWeeklyForecast(weather.coord.lat, weather.coord.lon, this.$i18n.locale);
-        this.additionalData = await weatherService.getAdditionalData(city);
+        this.updateTranslatedDescriptions();
         localStorage.setItem('lastCity', city);
         this.isFavorite = this.favorites.includes(city);
       } catch (error) {
@@ -196,10 +197,31 @@ export default {
         this.weatherData = null;
         this.hourlyForecast = [];
         this.weatherIconUrl = '';
-        this.$emit('error', 'Failed to load weather data');
+        this.showErrorModal(error.message || 'Failed to load weather data');
       } finally {
         this.isLoading = false;
       }
+    },
+    async updateWeeklyForecastDates(locale) {
+      try {
+        const weekly = await weatherService.getWeeklyForecast(
+          this.weatherData.coord.lat,
+          this.weatherData.coord.lon,
+          locale
+        );
+        this.weeklyForecast = weekly;
+      } catch (error) {
+        console.error('Home: Error updating weekly forecast dates:', error);
+        this.showErrorModal(error.message || 'Failed to update weekly forecast');
+      }
+    },
+    updateTranslatedDescriptions() {
+      this.translatedDescriptions = {};
+      [...this.hourlyForecast, ...this.weeklyForecast].forEach(item => {
+        if (item.description && item.description !== 'N/A') {
+          this.translatedDescriptions[item.description] = this.$t(item.description);
+        }
+      });
     },
     getIconUrl(iconCode) {
       return iconCode ? `https://openweathermap.org/img/wn/${iconCode}@2x.png` : '';
@@ -211,7 +233,7 @@ export default {
         this.favorites = this.favorites.filter(favCity => favCity !== this.currentCity);
       } else {
         if (this.favorites.length >= 5) {
-          this.$emit('limit-exceeded', 'Maximum number of favorite cities reached');
+          this.showErrorModal('Maximum number of favorite cities reached');
           return;
         }
         this.isFavorite = true;
@@ -237,7 +259,15 @@ export default {
       this.state.modalState.isVisible = false;
     },
     showErrorModal(message) {
-      this.$emit('error', message);
+      this.state.modalState = {
+        isVisible: true,
+        type: 'error',
+        confirmButtonText: 'OK',
+        cancelButtonText: '',
+        showConfirmButton: true,
+        showCancelButton: false,
+        data: { message },
+      };
     },
     handleModalConfirm() {
       this.state.modalState.isVisible = false;
@@ -270,6 +300,7 @@ export default {
   margin-right: 0;
   margin-left: auto;
   color: white;
+  transition: background-color 0.3s ease;
 }
 
 .weather-sections {
@@ -284,6 +315,7 @@ export default {
   border-radius: 10px;
   padding: 20px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  min-height: 200px; /* Фиксируем минимальную высоту */
 }
 
 .weather-section:not(:first-child) {
@@ -293,6 +325,8 @@ export default {
 .weather-section h2 {
   margin: 0 0 10px;
   font-size: 24px;
+  min-height: 32px; /* Фиксируем высоту заголовка */
+  line-height: 32px;
 }
 
 .weather-card {
@@ -303,6 +337,7 @@ export default {
   margin: 0 auto;
   background-color: white;
   overflow: hidden;
+  min-height: 150px; /* Фиксируем минимальную высоту */
 }
 
 .weather-card__top {
@@ -328,17 +363,18 @@ export default {
 .weather-card__temp {
   font-size: 25px;
 }
-.weather-card__btn{
-box-shadow: 0 2px 4px rgba(0, 255, 255, 0.573);
 
+.weather-card__btn {
+  box-shadow: 0 2px 4px rgba(0, 255, 255, 0.573);
+  transition: color 0.3s ease;
 }
-.weather-card__btn:hover{
-color: aqua;
 
+.weather-card__btn:hover {
+  color: aqua;
 }
+
 .weather-card.favorite .weather-card__btn {
   color: aqua;
-  
 }
 
 .weather-card__datetime {
@@ -358,6 +394,8 @@ td {
   padding: 10px;
   text-align: left;
   border-bottom: 1px solid #ddd;
+  min-height: 50px;
+  line-height: 50px;
 }
 
 th {
@@ -365,31 +403,8 @@ th {
 }
 
 td img {
-  width: 40px;
-  height: 40px;
-}
-
-.additional-data ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.additional-data li {
-  padding: 5px 0;
-  font-size: 16px;
-}
-
-.addition__point {
-  color: rgb(242, 152, 50);
-  font-size: 16px;
-}
-
-.error,
-.no-data {
-  text-align: center;
-  color: red;
-  padding: 20px;
+  width: 80px;
+  height: 80px;
 }
 
 .addition-info {
@@ -402,7 +417,19 @@ td img {
   color: #666;
   width: fit-content;
   align-self: last baseline;
+}
 
+.addition__point {
+  color: rgb(242, 152, 50);
+  font-size: 16px;
+}
+
+.error,
+.no-data {
+  text-align: center;
+  color: red;
+  padding: 20px;
+  min-height: 60px;
 }
 
 .hourly-scroll {
@@ -423,8 +450,13 @@ td img {
   display: flex;
   gap: 20px;
   justify-content: space-between;
-  font-size: 14px;
+  font-size: 16px;
   color: #333;
+}
+.hourly-times span{
+  display: inline-block;
+  min-width: 80px;
+  text-align: center;
 }
 
 .hourly-data {
@@ -438,22 +470,30 @@ td img {
   flex-direction: column;
   align-items: center;
   gap: 4px;
-  min-width: 40px;
+  min-width: 80px;
 }
 
 .hourly-item img {
-  width: 40px;
-  height: 40px;
+  width: 80px;
+  height: 80px;
 }
 
 .hourly-item span {
   display: inline-block;
-  width: 40px;
-  font-size: 14px;
+  width: 80px;
+  font-size: 16px;
   color: #333;
+  text-align: center;
 }
 
-@media(max-width:560px) {
+.table__description {
+  max-width: 150px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (max-width: 560px) {
   .table__description {
     display: none;
   }

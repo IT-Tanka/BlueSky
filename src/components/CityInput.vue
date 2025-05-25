@@ -21,10 +21,10 @@ export default {
       cities: [],
       selectedIndex: -1,
       fetchCitiesDebounced: this.debounce(this.fetchCitiesApi, 300),
-      isMounted: false, // Защита от немедленного закрытия
+      isMounted: false, 
     };
   },
-  emits: ['city-selected', 'cancel', 'error'], // Объявляем события
+  emits: ['city-selected', 'cancel', 'error'],
   methods: {
     debounce(func, wait) {
       let timeout;
@@ -90,7 +90,7 @@ export default {
       }
     },
     handleClickOutside(event) {
-      if (!this.isMounted) return; // Игнорируем клики сразу после монтирования
+      if (!this.isMounted) return;
       if (this.$refs.cityInputBlock && !this.$refs.cityInputBlock.contains(event.target)) {
         this.$emit('cancel');
         this.cities = [];

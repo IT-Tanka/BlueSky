@@ -84,20 +84,6 @@ export const weatherService = {
     }
   },
 
-  async getAdditionalData(city) {
-    try {
-      const weather = await this.getCurrentWeather(city);
-      return {
-        humidity: weather.humidity,
-        pressure: weather.pressure,
-        windSpeed: weather.windSpeed,
-      };
-    } catch (error) {
-      console.error('WeatherService: Error fetching additional data:', error);
-      throw error;
-    }
-  },
-
   clearCache() {
     cache.clear();
   },
