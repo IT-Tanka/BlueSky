@@ -86,6 +86,7 @@
 <script>
 import { reactive, computed } from 'vue';
 import { useLanguageStore } from '../stores/language';
+import { useFavoritesStore } from '../stores/favorites'; // Import the new store
 import IconAddBlock from '../components/icons/IconAddBlock.vue';
 import IconAddToFavorite from '../components/icons/IconAddToFavorite.vue';
 import IconHumidity from '../components/icons/IconHumidity.vue';
@@ -107,7 +108,7 @@ export default {
     IconPressure,
     CityInput,
     Modal,
-    Preloader
+    Preloader,
   },
   setup() {
     const state = reactive({
@@ -122,7 +123,8 @@ export default {
       },
     });
     const languageStore = useLanguageStore();
-    return { state, languageStore };
+    const favoritesStore = useFavoritesStore(); // Initialize the favorites store
+    return { state, languageStore, favoritesStore };
   },
   data() {
     return {
@@ -133,10 +135,9 @@ export default {
       currentCity: null,
       weatherIconUrl: '',
       isFavorite: false,
-      favorites: JSON.parse(localStorage.getItem('favorites')) || [],
       currentTime: new Date(),
       timeInterval: null,
-      translatedDescriptions: {}, // Кэш для переводов описаний погоды
+      translatedDescriptions: {},
     };
   },
   computed: {
@@ -149,18 +150,14 @@ export default {
     this.updateTime();
     this.timeInterval = setInterval(this.updateTime, 60000);
     this.loadWeatherData();
-    setInterval(() => weatherService.clearCache(), 30 * 60 * 1000); // Очистка кэша каждые 30 минут
+    setInterval(() => weatherService.clearCache(), 30 * 60 * 1000);
   },
   beforeUnmount() {
     if (this.timeInterval) clearInterval(this.timeInterval);
   },
   watch: {
     currentCity(newCity) {
-      if (newCity && this.favorites.includes(newCity)) {
-        this.isFavorite = true;
-      } else {
-        this.isFavorite = false;
-      }
+      this.isFavorite = this.favoritesStore.isFavorite(newCity);
     },
     '$i18n.locale': {
       handler(newLocale) {
@@ -206,7 +203,7 @@ export default {
         this.weeklyForecast = await weatherService.getWeeklyForecast(weather.coord.lat, weather.coord.lon, this.$i18n.locale);
         this.updateTranslatedDescriptions();
         localStorage.setItem('lastCity', city);
-        this.isFavorite = this.favorites.includes(city);
+        this.isFavorite = this.favoritesStore.isFavorite(city);
       } catch (error) {
         console.error('Home: Error loading weather data:', error);
         this.weatherData = null;
@@ -242,19 +239,17 @@ export default {
       return iconCode ? `https://openweathermap.org/img/wn/${iconCode}@2x.png` : '';
     },
     toggleIsFavorite() {
-      this.favorites = JSON.parse(localStorage.getItem('favorites')) || [];
-      if (this.favorites.includes(this.currentCity)) {
+      if (this.isFavorite) {
+        this.favoritesStore.removeFavorite(this.currentCity);
         this.isFavorite = false;
-        this.favorites = this.favorites.filter(favCity => favCity !== this.currentCity);
       } else {
-        if (this.favorites.length >= 5) {
+        const success = this.favoritesStore.addFavorite(this.currentCity);
+        if (!success) {
           this.showErrorModal('Maximum number of favorite cities reached');
           return;
         }
         this.isFavorite = true;
-        this.favorites.unshift(this.currentCity);
       }
-      localStorage.setItem('favorites', JSON.stringify(this.favorites));
     },
     showAddCityModal() {
       this.state.modalState = {

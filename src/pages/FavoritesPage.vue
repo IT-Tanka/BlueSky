@@ -1,8 +1,8 @@
 <template>
   <main class="favorite-page">
     <div class="container">
-      <transition-group v-if="weatherBlocks.length" name="fade" tag="div" class="weather-blocks-container">
-        <WeatherBlock v-for="(city, index) in weatherBlocks" :key="city" :city="city" @remove="removeBlock"
+      <transition-group v-if="favoritesStore.favorites.length" name="fade" tag="div" class="weather-blocks-container">
+        <WeatherBlock v-for="(city, index) in favoritesStore.favorites" :key="city" :city="city" @remove="removeBlock"
           @request-remove="showModalForRemoval" />
       </transition-group>
       <div v-else class="empty-favorites">
@@ -13,26 +13,25 @@
 </template>
 
 <script>
+import { useFavoritesStore } from '../stores/favorites'; // Import the favorites store
 import WeatherBlock from '../components/WeatherBlock.vue';
 
 export default {
-    components: {
-        WeatherBlock,
+  components: {
+    WeatherBlock,
+  },
+  setup() {
+    const favoritesStore = useFavoritesStore();
+    return { favoritesStore };
+  },
+  methods: {
+    showModalForRemoval(city) {
+      this.$emit('request-remove', city, this.removeBlock);
     },
-    data() {
-        return {
-            weatherBlocks: JSON.parse(localStorage.getItem('favorites')) || [],
-        };
+    removeBlock(city) {
+      this.favoritesStore.removeFavorite(city);
     },
-    methods: {
-        showModalForRemoval(city) {
-            this.$emit('request-remove', city, this.removeBlock);
-        },
-        removeBlock(city) {
-            this.weatherBlocks = this.weatherBlocks.filter(blockCity => blockCity !== city);
-            localStorage.setItem('favorites', JSON.stringify(this.weatherBlocks));
-        },
-    },
+  },
 };
 </script>
 
