@@ -51,7 +51,12 @@ export default {
 
 <style scoped>
 .header {
-  background-color: rgba(0, 128, 0, 0.268);
+  background-color: rgba(0, 128, 0, 0.8);
+    position: fixed;
+    z-index: 99;
+    top: 0;
+    left: 0;
+    width: 100%;
 }
 
 .header__container {
@@ -65,6 +70,7 @@ export default {
 .header__container h1 {
   display: flex;
   color: aqua;
+  font-size: 25px;
 }
 
 .header__container sub {
@@ -83,6 +89,7 @@ export default {
   gap: 5px;
   align-items: center;
   font-size: 18px;
+  margin-right: 60px;
 }
 
 .header__container .devider {
@@ -97,10 +104,11 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 5px;
+  gap: 2px;
   text-transform: uppercase;
   font-size: 12px;
   border: none;
+  color: #3ebde6;
 }
 
 .header__container .logo-link {
@@ -108,5 +116,16 @@ export default {
   justify-content: center;
   align-items: center;
   gap: 1px;
+}
+@media(max-width:425px){
+  .header__container{
+    gap:10px
+  }
+  .header__container h1{
+   font-size: 20px;
+  }
+  .header__container nav{
+    margin-right: 30px;
+  }
 }
 </style>

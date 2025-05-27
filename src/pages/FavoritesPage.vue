@@ -48,7 +48,7 @@ export default {
   justify-content: center;
   text-align: center;
   min-height: 50vh;
-  color:#e9ae50;
+  color:#e28e07;
   font-size: 25px; 
 }
 .fade-enter-active,

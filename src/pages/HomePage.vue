@@ -20,9 +20,18 @@
             <img :src="weatherIconUrl" :alt="weatherData.description || 'weather icon'" />
             <p class="weather-card__temp">{{ weatherData.temp }} °C</p>
             <ul class="addition-info">
-              <li><span class="addition__point">{{ $t('Humidity') }}:</span> {{ weatherData.humidity }}%</li>
-              <li><span class="addition__point">{{ $t('Pressure') }}:</span> {{ weatherData.pressure }}hPa</li>
-              <li><span class="addition__point">{{ $t('Wind Speed') }}:</span> {{ weatherData.windSpeed }}m/s</li>
+              <li class="addition__point"><span class="addition__point-title">{{ $t('Humidity') }}:</span><span
+                  class="addition__point-value">{{ weatherData.humidity }}%</span>
+                <IconHumidity />
+              </li>
+              <li class="addition__point"><span class="addition__point-title">{{ $t('Pressure') }}:</span><span
+                  class="addition__point-value">{{ weatherData.pressure }}hPa</span>
+                <IconPressure />
+              </li>
+              <li class="addition__point"><span class="addition__point-title">{{ $t('Wind Speed') }}:</span><span
+                  class="addition__point-value">{{ weatherData.windSpeed }}m/s</span>
+                <IconWind />
+              </li>
             </ul>
           </div>
         </div>
@@ -79,6 +88,9 @@ import { reactive, computed } from 'vue';
 import { useLanguageStore } from '../stores/language';
 import IconAddBlock from '../components/icons/IconAddBlock.vue';
 import IconAddToFavorite from '../components/icons/IconAddToFavorite.vue';
+import IconHumidity from '../components/icons/IconHumidity.vue';
+import IconWind from '../components/icons/IconWind.vue';
+import IconPressure from '../components/icons/IconPressure.vue';
 import CityInput from '../components/CityInput.vue';
 import Modal from '../components/Modal.vue';
 import Preloader from '../components/Preloader.vue';
@@ -90,6 +102,9 @@ export default {
   components: {
     IconAddBlock,
     IconAddToFavorite,
+    IconHumidity,
+    IconWind,
+    IconPressure,
     CityInput,
     Modal,
     Preloader
@@ -315,7 +330,7 @@ export default {
   border-radius: 10px;
   padding: 20px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  min-height: 200px; /* Фиксируем минимальную высоту */
+  min-height: 200px;
 }
 
 .weather-section:not(:first-child) {
@@ -323,9 +338,9 @@ export default {
 }
 
 .weather-section h2 {
-  margin: 0 0 10px;
-  font-size: 24px;
-  min-height: 32px; /* Фиксируем высоту заголовка */
+  margin: 5px 0 20px 15px;
+  font-size: 22px;
+  min-height: 32px;
   line-height: 32px;
 }
 
@@ -337,7 +352,12 @@ export default {
   margin: 0 auto;
   background-color: white;
   overflow: hidden;
-  min-height: 150px; /* Фиксируем минимальную высоту */
+  min-height: 150px;
+}
+
+.weather-card:first-child {
+  background-color: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(173, 216, 230, 0.454);
 }
 
 .weather-card__top {
@@ -387,12 +407,13 @@ export default {
 table {
   width: 100%;
   border-collapse: collapse;
+  
 }
 
 th,
 td {
-  padding: 10px;
-  text-align: left;
+  padding:0 10px;
+  text-align: center;
   border-bottom: 1px solid #ddd;
   min-height: 50px;
   line-height: 50px;
@@ -413,17 +434,30 @@ td img {
   align-items: center;
   margin-left: auto;
   font-size: 14px;
-  gap: 3px;
+  gap: 8px;
   color: #666;
   width: fit-content;
   align-self: last baseline;
 }
 
+.addition-info li {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 .addition__point {
-  color: #e9ae50;
+  color:  #e28e07;
   font-size: 16px;
 }
 
+.addition__point-value {
+  color: #333;
+}
+#Capa_1{
+   
+  margin-left: 3px;
+}
 .error,
 .no-data {
   text-align: center;
@@ -453,7 +487,8 @@ td img {
   font-size: 16px;
   color: #333;
 }
-.hourly-times span{
+
+.hourly-times span {
   display: inline-block;
   min-width: 80px;
   text-align: center;
@@ -496,6 +531,15 @@ td img {
 @media (max-width: 560px) {
   .table__description {
     display: none;
+  }
+
+  .addition__point-title {
+    display: none;
+  }
+
+  .addition__point-value {
+    color: #e28e07;
+    font-weight: 500;
   }
 }
 </style>

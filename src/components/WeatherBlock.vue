@@ -161,7 +161,7 @@ export default {
   border: 1px solid lightblue;
   padding: 10px 20px;
   margin: 0 auto;
-  background-color: white;
+  background-color: rgba(255, 255, 255, 0.8);
   overflow: hidden;
 }
 
@@ -180,6 +180,7 @@ export default {
   justify-content: flex-start;
   gap: 20px;
   align-items: center;
+  overflow: auto;
 }
 
 .weather-card__temp {
