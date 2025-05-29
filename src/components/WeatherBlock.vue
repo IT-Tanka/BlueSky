@@ -1,20 +1,15 @@
 <template>
   <div :class="['weather-card', { favorite: isFavorite }]">
     <div class="weather-card__btns">
-      <button v-if="weatherData" :disabled="isLoading" class="weather-card__btn add-to-fav__btn"
-        @click="toggleIsFavorite">
-        <IconAddToFavorite />
-      </button>
       <button :disabled="isLoading" @click="$emit('request-remove', city)">
         <IconDelete />
       </button>
     </div>
     <Preloader :visible="isLoading" />
-    <transition name="height">
+    <transition name="smooth-height">
       <div class="weather-block" v-if="!isLoading && weatherData && weatherData.forecast">
         <p class="weather-card__datetime">{{ formattedDateTime }}</p>
         <div class="weather-card__info">
-
           <h2>{{ weatherData.cityName }}</h2>
           <img :src="weatherIconUrl" :alt="weatherData.description || 'weather icon'" />
           <p class="weather-card__temp">{{ weatherData.temp }} °C</p>
@@ -27,6 +22,7 @@
 
 <script>
 import { weatherService } from '../services/weatherService';
+import { useFavoritesStore } from '../stores/favorites';
 import IconAddToFavorite from './icons/IconAddToFavorite.vue';
 import IconDelete from './icons/IconDelete.vue';
 import TempChart from './TempChart.vue';
@@ -46,13 +42,16 @@ export default {
     TempChart,
     Preloader,
   },
+  setup() {
+    const favoritesStore = useFavoritesStore();
+    return { favoritesStore };
+  },
   data() {
     return {
       weatherData: null,
       weatherIconUrl: '',
       isHourly: true,
       isFavorite: false,
-      favorites: JSON.parse(localStorage.getItem('favorites')) || [],
       isLoading: false,
       currentTime: new Date(),
       timeInterval: null,
@@ -68,6 +67,7 @@ export default {
       handler(newCity) {
         if (newCity) {
           this.fetchWeather(newCity);
+          this.isFavorite = this.favoritesStore.isFavorite(newCity);
         } else {
           this.weatherData = null;
           this.weatherIconUrl = '';
@@ -87,7 +87,7 @@ export default {
   mounted() {
     this.updateTime();
     this.timeInterval = setInterval(this.updateTime, 60000);
-    if (this.favorites.includes(this.city)) this.isFavorite = true;
+    this.isFavorite = this.favoritesStore.isFavorite(this.city);
   },
   beforeUnmount() {
     if (this.timeInterval) clearInterval(this.timeInterval);
@@ -136,24 +136,22 @@ export default {
       }
     },
     toggleIsFavorite() {
-      this.favorites = JSON.parse(localStorage.getItem('favorites')) || [];
-      if (this.favorites.includes(this.city)) {
+      if (this.isFavorite) {
+        this.favoritesStore.removeFavorite(this.city);
         this.isFavorite = false;
-        this.favorites = this.favorites.filter(favCity => favCity !== this.city);
       } else {
-        if (this.favorites.length >= 5) {
+        const success = this.favoritesStore.addFavorite(this.city);
+        if (!success) {
           this.$emit('limit-exceeded');
           return;
         }
         this.isFavorite = true;
-        this.favorites.unshift(this.city);
       }
-      localStorage.setItem('favorites', JSON.stringify(this.favorites));
     },
   },
 };
 </script>
-
+<!-- src/components/WeatherBlock.vue -->
 <style scoped>
 .weather-card {
   width: 100%;
@@ -163,6 +161,8 @@ export default {
   margin: 0 auto;
   background-color: rgba(255, 255, 255, 0.8);
   overflow: hidden;
+  min-height: 150px; /* Совпадает с высотой в Favorite.vue */
+  transition: all 0.3s ease;
 }
 
 .weather-card__btns {
@@ -181,6 +181,8 @@ export default {
   gap: 20px;
   align-items: center;
   overflow: auto;
+  opacity: 0;
+  animation: fadeIn 0.5s ease forwards;
 }
 
 .weather-card__temp {
@@ -200,25 +202,30 @@ export default {
 
 .weather-block {
   max-height: 1000px;
-  transition: max-height 0.3s ease, opacity 0.3s ease;
-  overflow: hidden;
+  opacity: 1;
+  transition: max-height 0.5s ease, opacity 0.5s ease;
 }
 
-.height-enter-active,
-.height-leave-active {
-  transition: max-height 0.3s ease, opacity 0.3s ease;
+.smooth-height-enter-active,
+.smooth-height-leave-active {
+  transition: max-height 0.5s ease, opacity 0.5s ease;
 }
 
-.height-enter-from,
-.height-leave-to {
-  max-height: 20px;
+.smooth-height-enter-from,
+.smooth-height-leave-to {
+  max-height: 0;
   opacity: 0;
 }
 
-.height-enter-to,
-.height-leave-from {
+.smooth-height-enter-to,
+.smooth-height-leave-from {
   max-height: 1000px;
   opacity: 1;
 }
 
+@keyframes fadeIn {
+  to {
+    opacity: 1;
+  }
+}
 </style>

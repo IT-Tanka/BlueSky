@@ -1,8 +1,8 @@
 <template>
-  <main class="home-page">
+  <div class="home-page">
     <div class="container">
       <button class="add-block-btn" @click.stop="showAddCityModal">
-        {{ $t('Add City') }}
+        <span>{{ $t('Add City') }}</span>
         <IconAddBlock />
       </button>
       <Preloader v-if="isLoading" :visible="isLoading" />
@@ -80,7 +80,7 @@
         <div v-else-if="state.modalState.type === 'error'">{{ state.modalState.data.message }}</div>
       </template>
     </Modal>
-  </main>
+  </div>
 </template>
 
 <script>
@@ -123,7 +123,7 @@ export default {
       },
     });
     const languageStore = useLanguageStore();
-    const favoritesStore = useFavoritesStore(); // Initialize the favorites store
+    const favoritesStore = useFavoritesStore();  
     return { state, languageStore, favoritesStore };
   },
   data() {
@@ -292,23 +292,17 @@ export default {
 <style scoped>
 .home-page {
   padding-bottom: 30px;
-}
-
-.container {
-  max-width: 1200px;
-  margin: 0 auto;
+  min-height: 100vh;
 }
 
 .add-block-btn {
   width: fit-content;
-  padding: 10px;
+  padding: 15px;
   display: flex;
   justify-content: center;
   align-items: center;
   font-size: 12px;
   gap: 10px;
-  margin-right: 0;
-  margin-left: auto;
   color: white;
   transition: background-color 0.3s ease;
 }
@@ -402,12 +396,11 @@ export default {
 table {
   width: 100%;
   border-collapse: collapse;
-  
 }
 
 th,
 td {
-  padding:0 10px;
+  padding: 0 10px;
   text-align: center;
   border-bottom: 1px solid #ddd;
   min-height: 50px;
@@ -442,17 +435,18 @@ td img {
 }
 
 .addition__point {
-  color:  #e28e07;
+  color: #e28e07;
   font-size: 16px;
 }
 
 .addition__point-value {
   color: #333;
 }
-#Capa_1{
-   
+
+#Capa_1 {
   margin-left: 3px;
 }
+
 .error,
 .no-data {
   text-align: center;
@@ -535,6 +529,12 @@ td img {
   .addition__point-value {
     color: #e28e07;
     font-weight: 500;
+  }
+  .add-block-btn{
+    padding: 10px;
+  }
+  .add-block-btn span{
+    display: none;
   }
 }
 </style>

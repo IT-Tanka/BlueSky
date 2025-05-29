@@ -1,3 +1,4 @@
+<!-- src/components/Header.vue -->
 <template>
   <header class="header">
     <div class="container header__container">
@@ -51,19 +52,20 @@ export default {
 
 <style scoped>
 .header {
-  background-color: rgba(0, 128, 0, 0.8);
-    position: fixed;
-    z-index: 99;
-    top: 0;
-    left: 0;
-    width: 100%;
+  background-color: #008000cc;
+  background: linear-gradient(90deg,rgba(0, 128, 0, 1) 0%, rgba(0, 128, 0, 0.9) 50%, rgba(255, 255, 255, 0.2) 100%);
+  position: fixed;
+  z-index: 99;
+  top: 0;
+  left: 0;
+  width: calc(100% - var(--scrollbar-width, 16px)); 
 }
 
 .header__container {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px;
+  padding: 10px calc(15px + var(--scrollbar-width, 16px)) 10px 15px;
   gap: 30px;
 }
 
@@ -94,7 +96,7 @@ export default {
 
 .header__container .devider {
   color: white;
-  font-size: 40px;
+  font-size: 16px;
 }
 
 .header__container button {
@@ -108,7 +110,7 @@ export default {
   text-transform: uppercase;
   font-size: 12px;
   border: none;
-  color: #3ebde6;
+  color: #0080009e;
 }
 
 .header__container .logo-link {
@@ -117,14 +119,18 @@ export default {
   align-items: center;
   gap: 1px;
 }
-@media(max-width:425px){
-  .header__container{
-    gap:10px
+
+@media (max-width: 425px) {
+  .header__container {
+    gap: 10px;
+    padding-right: calc(10px + var(--scrollbar-width, 0px));
   }
-  .header__container h1{
-   font-size: 20px;
+
+  .header__container h1 {
+    font-size: 20px;
   }
-  .header__container nav{
+
+  .header__container nav {
     margin-right: 30px;
   }
 }

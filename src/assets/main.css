@@ -17,7 +17,9 @@ body {
 body {
   line-height: 1;
 }
-
+main{
+  padding-right:var(--scrollbar-width, 16px);
+}
 ol,
 ul {
   list-style: none;
@@ -92,21 +94,6 @@ a {
   position: absolute;
 }
 
-.weather-blocks-container {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 20px;
-}
-
-@media (max-width:768px) {
-  .weather-blocks-container {
-    grid-template-columns: 1fr;
-  }
-}
-
-.favorite-page .add-to-fav__btn {
-  display: none;
-}
 
 .modal-overlay {
   position: fixed;

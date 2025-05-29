@@ -1,5 +1,5 @@
 <template>
-  <main class="favorite-page">
+  <div class="favorite-page">
     <div class="container">
       <transition-group v-if="favoritesStore.favorites.length" name="fade" tag="div" class="weather-blocks-container">
         <WeatherBlock v-for="(city, index) in favoritesStore.favorites" :key="city" :city="city" @remove="removeBlock"
@@ -9,11 +9,11 @@
         <p class="empty-favorites__message">{{ $t('No favorite cities message') }}</p>
       </div>
     </div>
-  </main>
+  </div> 
 </template>
 
 <script>
-import { useFavoritesStore } from '../stores/favorites'; // Import the favorites store
+import { useFavoritesStore } from '../stores/favorites';
 import WeatherBlock from '../components/WeatherBlock.vue';
 
 export default {
@@ -36,10 +36,15 @@ export default {
 </script>
 
 <style scoped>
-.favorite-page {
-    padding-top: 30px;
-    padding-bottom: 30px;
+.favorite-page{
+  padding: 60px 0 30px 0;
 }
+.weather-blocks-container {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
 .empty-favorites {
   display: flex;
   flex-direction: column;
@@ -47,27 +52,36 @@ export default {
   justify-content: center;
   text-align: center;
   min-height: 50vh;
-  color:#e28e07;
-  font-size: 25px; 
+  color: #e28e07;
+  font-size: 25px;
 }
+
 .fade-enter-active,
 .fade-leave-active {
-    transition: opacity 0.5s ease, transform 0.5s ease;
+  transition: opacity 0.5s ease, transform 0.5s ease;
 }
 
 .fade-enter-from,
 .fade-leave-to {
-    opacity: 0;
-    transform: translateY(20px);
+  opacity: 0;
+  transform: translateY(20px);
 }
 
 .fade-enter-to,
 .fade-leave-from {
-    opacity: 1;
-    transform: translateY(0);
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .fade-move {
-    transition: transform 0.5s ease;
+  transition: transform 0.5s ease;
+}
+@media (max-width:768px) {
+  .favorite-page{
+  padding: 40px 0 20px 0;
+}
+  .weather-blocks-container {
+    grid-template-columns: 1fr;
+  }
 }
 </style>
