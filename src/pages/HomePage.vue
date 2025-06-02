@@ -7,36 +7,34 @@
       </button>
       <Preloader v-if="isLoading" :visible="isLoading" />
       <div v-else-if="weatherData" class="weather-sections">
-        <!-- Weather Info Block -->
         <div :class="['weather-card', { favorite: isFavorite }]">
-          <div class="weather-card__top">
-            <p class="weather-card__datetime">{{ formattedDateTime }}</p>
-            <button :disabled="isLoading" class="weather-card__btn add-to-fav__btn" @click="toggleIsFavorite">
-              <IconAddToFavorite />
+          <button :disabled="isLoading" class="weather-card__btn" @click="toggleIsFavorite">
+                 <IconIsFavorite :is-active="isFavorite" />
             </button>
-          </div>
+            <p class="weather-card__datetime">{{ formattedDateTime }}</p>
           <div class="weather-card__info">
             <h2>{{ weatherData.cityName }}</h2>
             <img :src="weatherIconUrl" :alt="weatherData.description || 'weather icon'" />
             <p class="weather-card__temp">{{ weatherData.temp }} °C</p>
             <ul class="addition-info">
-              <li class="addition__point"><span class="addition__point-title">{{ $t('Humidity') }}:</span><span
-                  class="addition__point-value">{{ weatherData.humidity }}%</span>
+              <li class="addition__point">
+                <span class="addition__point-title">{{ $t('Humidity') }}:</span>
+                <span class="addition__point-value">{{ weatherData.humidity }}%</span>
                 <IconHumidity />
               </li>
-              <li class="addition__point"><span class="addition__point-title">{{ $t('Pressure') }}:</span><span
-                  class="addition__point-value">{{ weatherData.pressure }}hPa</span>
+              <li class="addition__point">
+                <span class="addition__point-title">{{ $t('Pressure') }}:</span>
+                <span class="addition__point-value">{{ weatherData.pressure }}hPa</span>
                 <IconPressure />
               </li>
-              <li class="addition__point"><span class="addition__point-title">{{ $t('Wind Speed') }}:</span><span
-                  class="addition__point-value">{{ weatherData.windSpeed }}m/s</span>
+              <li class="addition__point">
+                <span class="addition__point-title">{{ $t('Wind Speed') }}:</span>
+                <span class="addition__point-value">{{ weatherData.windSpeed }}m/s</span>
                 <IconWind />
               </li>
             </ul>
           </div>
         </div>
-
-        <!-- Block 1: Hourly Forecast -->
         <div class="weather-section hourly-forecast">
           <div v-if="hourlyForecast.length" class="hourly-scroll">
             <div class="hourly-card">
@@ -51,9 +49,8 @@
               </div>
             </div>
           </div>
-          <p v-else class="no-data">{{ $t('No hourly data available') }}</p>
+          <p v-else class="no-data error">{{ $t('No hourly data available') }}</p>
         </div>
-        <!-- Block 2: Weekly Forecast -->
         <div class="weather-section weekly-forecast">
           <h2>{{ $t('Weekly Forecast') }}</h2>
           <table>
@@ -86,9 +83,9 @@
 <script>
 import { reactive, computed } from 'vue';
 import { useLanguageStore } from '../stores/language';
-import { useFavoritesStore } from '../stores/favorites'; // Import the new store
+import { useFavoritesStore } from '../stores/favorites';
 import IconAddBlock from '../components/icons/IconAddBlock.vue';
-import IconAddToFavorite from '../components/icons/IconAddToFavorite.vue';
+import IconIsFavorite from '../components/icons/IconIsFavorite.vue';
 import IconHumidity from '../components/icons/IconHumidity.vue';
 import IconWind from '../components/icons/IconWind.vue';
 import IconPressure from '../components/icons/IconPressure.vue';
@@ -102,7 +99,7 @@ import { formatDateTime } from '../utils/formatDate';
 export default {
   components: {
     IconAddBlock,
-    IconAddToFavorite,
+    IconIsFavorite,
     IconHumidity,
     IconWind,
     IconPressure,
@@ -289,252 +286,186 @@ export default {
 };
 </script>
 
-<style scoped>
+
+<style lang="scss" scoped>
 .home-page {
-  padding-bottom: 30px;
+  padding-bottom: $spacing-xxl;
   min-height: 100vh;
 }
 
 .add-block-btn {
   width: fit-content;
-  padding: 15px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 12px;
-  gap: 10px;
-  color: white;
-  transition: background-color 0.3s ease;
+  padding: $spacing-lg;
+  @include flex-center;
+  font-size: $font-size-sm;
+  gap: $spacing-md;
+  color: $white;
+  @include transition(background-color);
+
+  @media (max-width: 560px) {
+    padding: $spacing-md;
+
+    span {
+      display: none;
+    }
+  }
 }
 
 .weather-sections {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: $spacing-xl;
 }
 
 .weather-section {
-  background: white;
-  border: 1px solid lightblue;
-  border-radius: 10px;
-  padding: 20px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  min-height: 200px;
-}
+  @include card;
 
-.weather-section:not(:first-child) {
-  background: rgba(255, 255, 255, 0.8);
-}
+  &:not(:first-child) {
+    background: rgba($white, 0.8);
+  }
 
-.weather-section h2 {
-  margin: 5px 0 20px 15px;
-  font-size: 22px;
-  min-height: 32px;
-  line-height: 32px;
+  h2 {
+    margin: $spacing-sm 0 $spacing-xl $spacing-lg;
+    font-size: 22px;
+    min-height: 32px;
+    line-height: 32px;
+  }
+
+  &.hourly-forecast {
+    .hourly-scroll {
+      overflow-x: auto;
+      padding-bottom: $spacing-md;
+    }
+
+    .hourly-card {
+      display: flex;
+      flex-direction: column;
+      gap: $spacing-md;
+      min-width: fit-content;
+      padding: $spacing-md;
+      border-radius: $border-radius-md;
+    }
+
+    .hourly-times {
+      display: flex;
+      gap: $spacing-xl;
+      justify-content: space-between;
+      font-size: $font-size-lg;
+      color: #333;
+
+      span {
+        display: inline-block;
+        min-width: 80px;
+        text-align: center;
+      }
+    }
+
+    .hourly-data {
+      display: flex;
+      gap: $spacing-xl;
+      justify-content: space-between;
+    }
+
+    .hourly-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      min-width: 80px;
+
+      img {
+        width: 80px;
+        height: 80px;
+      }
+
+      span {
+        display: inline-block;
+        width: 80px;
+        font-size: $font-size-lg;
+        color: #333;
+        text-align: center;
+      }
+    }
+  }
+
+  &.weekly-forecast {
+    table {
+      width: 100%;
+      border-collapse: collapse;
+
+      th, td {
+        padding: 0 $spacing-md;
+        text-align: center;
+        border-bottom: 1px solid $light-gray;
+        min-height: 50px;
+        line-height: 50px;
+      }
+
+      th {
+        background: $background-gray;
+      }
+
+      td img {
+        width: 80px;
+        height: 80px;
+      }
+
+      .table__description {
+        max-width: 150px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+
+        @media (max-width: 560px) {
+          display: none;
+        }
+      }
+    }
+  }
 }
 
 .weather-card {
-  width: 100%;
-  border-radius: 20px;
-  border: 1px solid lightblue;
-  padding: 10px 20px;
-  margin: 0 auto;
-  background-color: white;
-  overflow: hidden;
-  min-height: 150px;
-}
-
-.weather-card:first-child {
-  background-color: rgba(255, 255, 255, 0.2);
-  border: 1px solid rgba(173, 216, 230, 0.454);
-}
-
-.weather-card__top {
-  padding-top: 20px;
-  display: flex;
-  justify-content: space-between;
-}
-
-.weather-card__btns button {
-  width: 40px;
-  height: 40px;
-}
-
-.weather-card__info {
-  display: flex;
-  justify-content: flex-start;
-  gap: 10px;
-  align-items: center;
-  font-size: 25px;
-  flex-wrap: wrap;
-}
-
-.weather-card__temp {
-  font-size: 25px;
-}
-
-.weather-card__btn {
-  box-shadow: 0 2px 4px rgba(0, 255, 255, 0.573);
-  transition: color 0.3s ease;
-}
-
-.weather-card__btn:hover {
-  color: aqua;
-}
-
-.weather-card.favorite .weather-card__btn {
-  color: aqua;
-}
-
-.weather-card__datetime {
-  font-size: 14px;
-  color: #666;
-  margin: 0;
-  line-height: 1.2;
-}
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-th,
-td {
-  padding: 0 10px;
-  text-align: center;
-  border-bottom: 1px solid #ddd;
-  min-height: 50px;
-  line-height: 50px;
-}
-
-th {
-  background: #f4f4f4;
-}
-
-td img {
-  width: 80px;
-  height: 80px;
+  &:first-child {
+    background-color: rgba($white, 0.2);
+    border: 1px solid rgba($light-blue, 0.454);
+  }
 }
 
 .addition-info {
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  @include flex-center;
   margin-left: auto;
-  font-size: 14px;
+  font-size: $font-size-md;
   gap: 8px;
-  color: #666;
+  color: $gray;
   width: fit-content;
   align-self: last baseline;
-}
 
-.addition-info li {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.addition__point {
-  color: #e28e07;
-  font-size: 16px;
-}
-
-.addition__point-value {
-  color: #333;
-}
-
-#Capa_1 {
-  margin-left: 3px;
-}
-
-.error,
-.no-data {
-  text-align: center;
-  color: red;
-  padding: 20px;
-  min-height: 60px;
-}
-
-.hourly-scroll {
-  overflow-x: auto;
-  padding-bottom: 10px;
-}
-
-.hourly-card {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  min-width: fit-content;
-  padding: 10px;
-  border-radius: 8px;
-}
-
-.hourly-times {
-  display: flex;
-  gap: 20px;
-  justify-content: space-between;
-  font-size: 16px;
-  color: #333;
-}
-
-.hourly-times span {
-  display: inline-block;
-  min-width: 80px;
-  text-align: center;
-}
-
-.hourly-data {
-  display: flex;
-  gap: 20px;
-  justify-content: space-between;
-}
-
-.hourly-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-  min-width: 80px;
-}
-
-.hourly-item img {
-  width: 80px;
-  height: 80px;
-}
-
-.hourly-item span {
-  display: inline-block;
-  width: 80px;
-  font-size: 16px;
-  color: #333;
-  text-align: center;
-}
-
-.table__description {
-  max-width: 150px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-@media (max-width: 560px) {
-  .table__description {
-    display: none;
+  li {
+    @include flex-center;
   }
 
-  .addition__point-title {
-    display: none;
+  .addition__point {
+    color: $secondary-accent;
+    font-size: $font-size-lg;
   }
 
   .addition__point-value {
-    color: #e28e07;
-    font-weight: 500;
+    color: #333;
   }
-  .add-block-btn{
-    padding: 10px;
+
+  #Capa_1 {
+    margin-left: 3px;
   }
-  .add-block-btn span{
-    display: none;
+
+  @media (max-width: 560px) {
+    .addition__point-title {
+      display: none;
+    }
+
+    .addition__point-value {
+      color: $secondary-accent;
+      font-weight: 500;
+    }
   }
 }
 </style>

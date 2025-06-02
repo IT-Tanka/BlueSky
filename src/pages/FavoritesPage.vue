@@ -9,7 +9,7 @@
         <p class="empty-favorites__message">{{ $t('No favorite cities message') }}</p>
       </div>
     </div>
-  </div> 
+  </div>
 </template>
 
 <script>
@@ -35,53 +35,57 @@ export default {
 };
 </script>
 
-<style scoped>
-.favorite-page{
-  padding: 60px 0 30px 0;
+
+<style lang="scss" scoped>
+.favorite-page {
+  padding: $header-height 0 $spacing-xxl 0;
+
+  @media (max-width: 768px) {
+    padding: 40px 0 $spacing-xl 0;
+  }
 }
+
 .weather-blocks-container {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 20px;
+  gap: $spacing-xl;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
 }
 
 .empty-favorites {
-  display: flex;
+  @include flex-center;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
   text-align: center;
   min-height: 50vh;
-  color: #e28e07;
-  font-size: 25px;
+  color: $secondary-accent;
+  font-size: $font-size-xxl;
 }
 
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.5s ease, transform 0.5s ease;
-}
+.fade {
+  &-enter-active,
+  &-leave-active {
+    @include transition(opacity, transform);
+    transition-duration: 0.5s;
+  }
 
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
-  transform: translateY(20px);
-}
+  &-enter-from,
+  &-leave-to {
+    opacity: 0;
+    transform: translateY(20px);
+  }
 
-.fade-enter-to,
-.fade-leave-from {
-  opacity: 1;
-  transform: translateY(0);
-}
+  &-enter-to,
+  &-leave-from {
+    opacity: 1;
+    transform: translateY(0);
+  }
 
-.fade-move {
-  transition: transform 0.5s ease;
-}
-@media (max-width:768px) {
-  .favorite-page{
-  padding: 40px 0 20px 0;
-}
-  .weather-blocks-container {
-    grid-template-columns: 1fr;
+  &-move {
+    @include transition(transform);
+    transition-duration: 0.5s;
   }
 }
 </style>

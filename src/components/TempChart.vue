@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="temp-chart">
     <div>
       <button @click="switchToHourly" :class="{ active: isHourly }">{{ $t('by hours') }}</button>
       <button @click="switchToDaily" :class="{ active: !isHourly }">{{ $t('by days') }}</button>
@@ -87,7 +87,7 @@ export default {
       this.isRendering = true;
       this.destroyChart();
 
-      const data = this.forecastData; // Use all data provided
+      const data = this.forecastData;
       try {
         const labels = data.map(item => {
           const date = new Date(item.dt * 1000);
@@ -159,35 +159,3 @@ export default {
   },
 };
 </script>
-
-<style scoped>
-button {
-  border: 1px solid lightblue;
-  padding: 7px;
-  min-width: 100px;
-  text-transform: uppercase;
-  margin-top: 20px;
-}
-
-button:first-child {
-  margin-left: 30px;
-}
-
-button:last-child {
-  margin-left: 5px;
-}
-
-button.active {
-  background-color: aqua;
-}
-
-canvas {
-  max-height: 50dvh;
-}
-
-.error {
-  color: red;
-  text-align: center;
-  margin-top: 20px;
-}
-</style>

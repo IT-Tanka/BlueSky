@@ -1,5 +1,5 @@
 <template>
-  <div class="city-input__block" ref="cityInputBlock">
+  <div class="city-input" ref="cityInput">
     <input type="text" v-model="query" @input="fetchCities" @focus="addHightoList" @keydown="handleKeydown"
       :placeholder="$t('Enter city')" ref="input" />
     <ul ref="citiesList" v-if="cities.length > 0">
@@ -118,49 +118,3 @@ export default {
   },
 };
 </script>
-
-<style scoped>
-.city-input__block {
-  position: relative;
-  margin: 20px auto;
-  width: fit-content;
-}
-
-input {
-  padding: 10px;
-  font-size: 16px;
-  border: 1px solid lightblue;
-  border-radius: 5px;
-  width: 250px;
-}
-
-ul {
-  position: absolute;
-  left: 0;
-  top: 100%;
-  background-color: white;
-  border: 1px solid lightblue;
-  width: 100%;
-  max-height: 200px;
-  overflow-y: auto;
-  z-index: 10;
-}
-
-li {
-  cursor: pointer;
-  padding: 5px 10px;
-  border-bottom: 1px solid #eee;
-}
-
-li:last-child {
-  border-bottom: none;
-}
-
-li.selected {
-  background-color: #f0f8ff;
-}
-
-li:hover {
-  background-color: #e6f0fa;
-}
-</style>

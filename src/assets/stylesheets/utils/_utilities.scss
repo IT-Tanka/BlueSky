@@ -1,0 +1,27 @@
+@use "variables" as *;
+
+.container {
+  max-width: $container-width;
+  width: 100%;
+  margin: 0 auto;
+  padding: $header-height $spacing-lg $spacing-lg $spacing-lg;
+  box-sizing: border-box;
+  padding-right: calc($spacing-lg + var(--scrollbar-width, 0px));
+}
+
+.nav-link {
+  color: $white;
+  &.router-link-active {
+    color: $accent-color;
+  }
+}
+
+.text-center {
+  text-align: center;
+}
+
+.error {
+  color: red;
+  padding: $spacing-xl;
+  min-height: 60px;
+}

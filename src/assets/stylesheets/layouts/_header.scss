@@ -1,0 +1,11 @@
+@use '../utils/variables' as *;
+
+.header {
+  background: linear-gradient(90deg, $primary-color 0%, rgba($primary-color, 0.9) 50%, rgba($white, 0.2) 100%);
+  position: fixed;
+  z-index: $z-index-header;
+  top: 0;
+  left: 0;
+  width: calc(100% - var(--scrollbar-width, 0px));
+  box-sizing: border-box;
+}

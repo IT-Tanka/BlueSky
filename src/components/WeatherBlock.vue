@@ -23,7 +23,6 @@
 <script>
 import { weatherService } from '../services/weatherService';
 import { useFavoritesStore } from '../stores/favorites';
-import IconAddToFavorite from './icons/IconAddToFavorite.vue';
 import IconDelete from './icons/IconDelete.vue';
 import TempChart from './TempChart.vue';
 import Preloader from './Preloader.vue';
@@ -37,7 +36,6 @@ export default {
     },
   },
   components: {
-    IconAddToFavorite,
     IconDelete,
     TempChart,
     Preloader,
@@ -151,76 +149,47 @@ export default {
   },
 };
 </script>
-<!-- src/components/WeatherBlock.vue -->
-<style scoped>
+
+<style lang="scss" scoped>
 .weather-card {
-  width: 100%;
-  border-radius: 20px;
-  border: 1px solid lightblue;
-  padding: 10px 20px;
-  margin: 0 auto;
-  background-color: rgba(255, 255, 255, 0.8);
-  overflow: hidden;
-  min-height: 150px; /* Совпадает с высотой в Favorite.vue */
-  transition: all 0.3s ease;
-}
+  background-color: rgba($white, 0.8);
+  transition: all $transition-duration $transition-easing;
 
-.weather-card__btns {
-  border-radius: 20px;
-  text-align: right;
-}
+  &__btns {
+    border-radius: $border-radius-xl;
+    text-align: right;
 
-.weather-card__btns button {
-  width: 40px;
-  height: 40px;
-}
-
-.weather-card__info {
-  display: flex;
-  justify-content: flex-start;
-  gap: 20px;
-  align-items: center;
-  overflow: auto;
-  opacity: 0;
-  animation: fadeIn 0.5s ease forwards;
-}
-
-.weather-card__temp {
-  font-size: 18px;
-}
-
-.weather-card.favorite .weather-card__btn {
-  color: aqua;
-}
-
-.weather-card__datetime {
-  font-size: 14px;
-  color: #666;
-  margin: 0;
-  line-height: 1.2;
+    button {
+      width: 40px;
+      height: 40px;
+    }
+  }
 }
 
 .weather-block {
   max-height: 1000px;
   opacity: 1;
-  transition: max-height 0.5s ease, opacity 0.5s ease;
+  @include transition(max-height, opacity);
 }
 
-.smooth-height-enter-active,
-.smooth-height-leave-active {
-  transition: max-height 0.5s ease, opacity 0.5s ease;
-}
+.smooth-height {
 
-.smooth-height-enter-from,
-.smooth-height-leave-to {
-  max-height: 0;
-  opacity: 0;
-}
+  &-enter-active,
+  &-leave-active {
+    @include transition(max-height, opacity);
+  }
 
-.smooth-height-enter-to,
-.smooth-height-leave-from {
-  max-height: 1000px;
-  opacity: 1;
+  &-enter-from,
+  &-leave-to {
+    max-height: 0;
+    opacity: 0;
+  }
+
+  &-enter-to,
+  &-leave-from {
+    max-height: 1000px;
+    opacity: 1;
+  }
 }
 
 @keyframes fadeIn {

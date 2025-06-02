@@ -1,0 +1,47 @@
+@use "../utils/variables" as *;
+
+.city-input {
+  
+    position: relative;
+    margin: $spacing-xl auto ;
+    width: fit-content;
+  
+
+  input {
+    padding: $spacing-md;
+    font-size: $font-size-lg;
+    border: 1px solid $light-blue;
+    border-radius: $border-radius-sm;
+    width: 250px;
+  }
+
+  ul {
+    position: absolute;
+    left: 0;
+    top: 100%;
+    background-color: $white;
+    border: 1px solid $light-blue;
+    width: 100%;
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 10;
+  }
+
+  li {
+    cursor: pointer;
+    padding: $spacing-sm $spacing-md;
+    border-bottom: 1px solid #eee;
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    &.selected {
+      background-color: #f0f8ff;
+    }
+
+    &:hover {
+      background-color: #e6f0fa;
+    }
+  }
+}

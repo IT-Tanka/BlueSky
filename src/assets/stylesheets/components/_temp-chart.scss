@@ -1,0 +1,32 @@
+@use "../utils/variables" as *;
+
+.temp-chart {
+  button {
+    border: 1px solid $light-blue;
+    padding: 7px;
+    min-width: 100px;
+    text-transform: uppercase;
+    margin-top: $spacing-xl;
+
+    &:first-child {
+      margin-left: 30px;
+    }
+
+    &:last-child {
+      margin-left: $spacing-sm;
+    }
+
+    &.active {
+      background-color: $accent-color;
+    }
+  }
+
+  canvas {
+    max-height: 50dvh;
+  }
+
+  .error {
+    @extend .error;
+    margin-top: $spacing-xl;
+  }
+}

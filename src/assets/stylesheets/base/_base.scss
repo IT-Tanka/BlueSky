@@ -1,0 +1,19 @@
+html, body {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  scrollbar-gutter: stable;
+  overflow-y: auto;
+}
+
+html {
+  padding-right: var(--scrollbar-width, 0);
+}
+
+@supports (scrollbar-gutter: stable) {
+  html {
+    padding-right: 0;
+  }
+}

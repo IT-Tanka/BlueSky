@@ -1,0 +1,42 @@
+@use "../utils/mixins" as *;
+@use "../utils/variables" as *;
+
+.weather-card {
+  @include card;
+  position: relative;
+
+  .weather-card__btn {
+    position: absolute;
+    top: 0;
+    right: 0;
+  }
+  &.favorite .weather-card__btn {
+    color: $accent-color;
+  }
+
+  &__info {
+    @include flex-center;
+    justify-content: flex-start;
+    gap: $spacing-md;
+    font-size: $font-size-xxl;
+    flex-wrap: wrap;
+    overflow: auto;
+    animation: fadeIn 0.5s $transition-easing forwards;
+    min-height: 100px;
+  }
+
+  &__temp {
+    font-size: $font-size-xxl;
+  }
+
+  &__datetime {
+    font-size: $font-size-md;
+    color: $gray;
+    margin: 0 10px 0 0;
+    line-height: 1.2;
+  }
+
+  &__btn {
+    @include transition(color);
+  }
+}

@@ -1,0 +1,51 @@
+@use "variables" as *;
+
+@mixin flex-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+@mixin button {
+  border-radius: $border-radius-sm;
+  font-size: $font-size-sm;
+  border: none;
+  background-color: transparent;
+  cursor: pointer;
+  padding: $spacing-md;
+  transition:
+    background-color $transition-duration $transition-easing,
+    color $transition-duration $transition-easing;
+}
+
+@mixin transition($properties...) {
+  transition: $properties $transition-duration $transition-easing;
+}
+
+@mixin card {
+  border: 1px solid $light-blue;
+  border-radius: $border-radius-xl;
+  padding: $spacing-md $spacing-xl;
+  background-color: $white;
+  overflow: hidden;
+  min-height: 150px;
+  box-shadow: 0 2px 4px rgba($black, 0.1);
+}
+
+@mixin respond($breakpoint) {
+  @if $breakpoint == xs {
+    @media (max-width: 425px) {
+      @content;
+    }
+  }
+  @if $breakpoint == sm {
+    @media (max-width: 560px) {
+      @content;
+    }
+  }
+  @if $breakpoint == md {
+    @media (max-width: 768px) {
+      @content;
+    }
+  }
+}

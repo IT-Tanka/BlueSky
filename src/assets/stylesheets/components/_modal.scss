@@ -1,0 +1,83 @@
+@use "../utils/variables" as *;
+@use "../utils/mixins" as *;
+
+.modal {
+  &-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba($black, 0.5);
+    @include flex-center;
+    z-index: $z-index-modal;
+  }
+
+  &-content {
+    background: $white;
+    padding: $spacing-xxl;
+    border-radius: $border-radius-lg;
+    position: relative;
+    max-width: 500px;
+    width: 90%;
+    box-shadow: 0 2px 10px rgba($black, 0.1);
+    text-align: center;
+  }
+
+  &-close {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background: transparent;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #333;
+  }
+
+  &-actions {
+    margin-top: $spacing-xxl;
+    @include flex-center;
+    gap: $spacing-md;
+  }
+
+  &-confirm {
+    background: rgba($accent-color, 0.389);
+    border: none;
+    padding: $spacing-md $spacing-xl;
+    border-radius: $border-radius-sm;
+    cursor: pointer;
+    font-size: $font-size-lg;
+  }
+
+  &-cancel {
+    background: $secondary-accent;
+    color: $white;
+    border: none;
+    padding: $spacing-md $spacing-xl;
+    border-radius: $border-radius-sm;
+    cursor: pointer;
+    font-size: $font-size-lg;
+  }
+
+  &-enter-active,
+  &-leave-active {
+    @include transition(opacity);
+  }
+
+  &-enter-from,
+  &-leave-to {
+    opacity: 0;
+  }
+
+  &-enter-active &-content,
+  &-leave-active &-content {
+    @include transition(transform, opacity);
+  }
+
+  &-enter-from &-content,
+  &-leave-to &-content {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+}

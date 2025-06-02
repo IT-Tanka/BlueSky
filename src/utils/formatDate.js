@@ -1,4 +1,3 @@
-// src/utils/formatDate.js
 export function formatDateTime(date, locale) {
   if (!date) return '';
   const localeCode = locale === 'uk' ? 'uk-UA' : 'en-US';

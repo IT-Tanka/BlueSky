@@ -26,15 +26,12 @@ import Header from './components/Header.vue';
 import Modal from './components/Modal.vue';
 
 export default {
-  components: {
-    Header,
-    Modal,
-  },
+  components: { Header, Modal },
   data() {
     return {
       modalState: {
         isVisible: false,
-        type: '', // 'remove', 'limit', 'error'
+        type: '',
         messageKey: '',
         confirmButtonText: '',
         cancelButtonText: '',
@@ -120,59 +117,31 @@ export default {
 };
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .app {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  background: url(./assets/sky.jpg);
+  background-size: cover;
 }
 
-.main-content {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  min-height: calc(100vh - 80px);
-}
+.page-fade {
+  &-enter-active,
+  &-leave-active {
+    @include transition(opacity, transform);
+  }
 
-.page-fade-enter-active,
-.page-fade-leave-active {
-  transition: opacity 0.2s ease, transform 0.2s ease;
-}
+  &-enter-from,
+  &-leave-to {
+    opacity: 0;
+    transform: translateY(10px);
+  }
 
-.page-fade-enter-from,
-.page-fade-leave-to {
-  opacity: 0;
-  transform: translateY(10px);
-}
-
-.page-fade-enter-to,
-.page-fade-leave-from {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-/* Резервируем пространство для полосы прокрутки */
-:global(html),
-:global(body) {
-  margin: 0;
-  padding: 0;
-  height: 100%;
-  width: 100%;
-  box-sizing: border-box;
-  scrollbar-gutter: stable;
-  /* Резервирует место для полосы прокрутки */
-  overflow-y: auto;
-}
-
-/* Запасной вариант для браузеров без поддержки scrollbar-gutter */
-:global(html) {
-  padding-right: var(--scrollbar-width, 0);
-}
-
-@supports (scrollbar-gutter: stable) {
-  :global(html) {
-    padding-right: 0;
-    /* Убираем padding, если scrollbar-gutter поддерживается */
+  &-enter-to,
+  &-leave-from {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 </style>
