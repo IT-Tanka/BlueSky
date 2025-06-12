@@ -113,16 +113,22 @@ export default {
       try {
         let forecast;
         if (this.isHourly) {
-          forecast = await weatherService.getHourlyForecast(lat, lon);
+          const hourly = await weatherService.getHourlyForecast(lat, lon);
+          forecast = hourly.map(item => ({
+            dt: item.dt,
+            main: { temp: item.temp + 273.15 },
+            weather: [{ description: item.description, icon: item.iconCode }],
+          }));
         } else {
-          const weekly = await weatherService.getWeeklyForecast(lat, lon);
+          const weekly = await weatherService.getWeeklyForecast(lat, lon, this.$i18n.locale);
           const today = new Date();
           forecast = weekly.map((day, index) => {
             const date = new Date(today);
             date.setDate(today.getDate() + index);
+            const avgTemp = (day.minTemp + day.maxTemp) / 2;
             return {
               dt: Math.floor(date.getTime() / 1000),
-              main: { temp: day.temp + 273.15 },
+              main: { temp: avgTemp + 273.15 },
               weather: [{ description: day.description, icon: day.iconCode }],
             };
           });
@@ -149,7 +155,6 @@ export default {
   },
 };
 </script>
-
 <style lang="scss" scoped>
 .weather-card {
   background-color: rgba($white, 0.8);

@@ -9,13 +9,13 @@
       <div v-else-if="weatherData" class="weather-sections">
         <div :class="['weather-card', { favorite: isFavorite }]">
           <button :disabled="isLoading" class="weather-card__btn" @click="toggleIsFavorite">
-                 <IconIsFavorite :is-active="isFavorite" />
-            </button>
-            <p class="weather-card__datetime">{{ formattedDateTime }}</p>
+            <IconIsFavorite :is-active="isFavorite" />
+          </button>
+          <p class="weather-card__datetime">{{ formattedDateTime }}</p>
           <div class="weather-card__info">
             <h2>{{ weatherData.cityName }}</h2>
             <img :src="weatherIconUrl" :alt="weatherData.description || 'weather icon'" />
-            <p class="weather-card__temp">{{ weatherData.temp }} °C</p>
+            <p class="weather-card__temp">{{ weatherData.temp }} °<tt class="tt-c">C</tt></p>
             <ul class="addition-info">
               <li class="addition__point">
                 <span class="addition__point-title">{{ $t('Humidity') }}:</span>
@@ -43,8 +43,11 @@
               </div>
               <div class="hourly-data">
                 <div v-for="item in hourlyForecast" :key="item.time" class="hourly-item">
-                  <img :src="getIconUrl(item.iconCode)" :alt="weatherData.description || 'weather icon'" />
-                  <span>{{ item.temp }}°C</span>
+                  <span>{{ item.temp }} °<tt class="tt-c">C</tt></span>
+                  <img :src="getIconUrl(item.iconCode)" :alt="item.description || 'weather icon'" />
+                  <div class="hourly-item__humidity">
+                    <IconHumidity /><span>{{ item.humidity }}%</span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -57,7 +60,7 @@
             <tbody>
               <tr v-for="item in weeklyForecast" :key="item.date">
                 <td>{{ item.date }}</td>
-                <td>{{ item.temp }} °C</td>
+                <td>{{ item.minTemp }}°<tt class="tt-c">C</tt> / {{ item.maxTemp }}°<tt class="tt-c">C</tt></td>
                 <td class="table__description">{{ translatedDescriptions[item.description] || item.description }}</td>
                 <td><img :src="getIconUrl(item.iconCode)" :alt="item.description" /></td>
               </tr>
@@ -120,7 +123,7 @@ export default {
       },
     });
     const languageStore = useLanguageStore();
-    const favoritesStore = useFavoritesStore();  
+    const favoritesStore = useFavoritesStore();
     return { state, languageStore, favoritesStore };
   },
   data() {
@@ -176,6 +179,7 @@ export default {
         try {
           city = await getCityByIP();
         } catch (error) {
+          console.error('Home: Error fetching city by IP:', error);
           city = 'Kyiv';
         }
       }
@@ -185,18 +189,8 @@ export default {
         const weather = await weatherService.getCurrentWeather(city);
         this.weatherData = weather;
         this.weatherIconUrl = `https://openweathermap.org/img/wn/${weather.iconCode}@2x.png`;
-        const rawForecast = await weatherService.getHourlyForecast(weather.coord.lat, weather.coord.lon);
-        this.hourlyForecast = rawForecast
-          .filter(item => item && item.main && typeof item.main.temp === 'number' && item.dt && Array.isArray(item.weather) && item.weather[0])
-          .map(item => ({
-            time: new Date(item.dt * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-            temp: Math.round(item.main.temp - 273.15),
-            description: item.weather[0].description || 'N/A',
-            iconCode: item.weather[0].icon || '',
-          }));
-        if (!this.hourlyForecast.length) {
-          console.warn('Home: No valid hourly forecast data after filtering');
-        }
+        const hourlyData = await weatherService.getHourlyForecast(weather.coord.lat, weather.coord.lon);
+        this.hourlyForecast = hourlyData;
         this.weeklyForecast = await weatherService.getWeeklyForecast(weather.coord.lat, weather.coord.lon, this.$i18n.locale);
         this.updateTranslatedDescriptions();
         localStorage.setItem('lastCity', city);
@@ -219,8 +213,9 @@ export default {
           locale
         );
         this.weeklyForecast = weekly;
+        this.updateTranslatedDescriptions();
       } catch (error) {
-        console.error('Home: Error updating weekly forecast dates:', error);
+        console.error('Home: Error updating weekly forecast:', error);
         this.showErrorModal(error.message || 'Failed to update weekly forecast');
       }
     },
@@ -286,7 +281,6 @@ export default {
 };
 </script>
 
-
 <style lang="scss" scoped>
 .home-page {
   padding-bottom: $spacing-xxl;
@@ -295,7 +289,7 @@ export default {
 
 .add-block-btn {
   width: fit-content;
-  padding: $spacing-lg;
+  padding: $spacing-xl;
   @include flex-center;
   font-size: $font-size-sm;
   gap: $spacing-md;
@@ -303,7 +297,7 @@ export default {
   @include transition(background-color);
 
   @media (max-width: 560px) {
-    padding: $spacing-md;
+    padding: $spacing-lg;
 
     span {
       display: none;
@@ -321,7 +315,7 @@ export default {
   @include card;
 
   &:not(:first-child) {
-    background: rgba($white, 0.8);
+    background: rgba($white, 0.7);
   }
 
   h2 {
@@ -351,7 +345,9 @@ export default {
       gap: $spacing-xl;
       justify-content: space-between;
       font-size: $font-size-lg;
-      color: #333;
+      color: $gray;
+      border-bottom: 1px solid $light-gray;
+      padding-bottom: $spacing-xl;
 
       span {
         display: inline-block;
@@ -361,6 +357,7 @@ export default {
     }
 
     .hourly-data {
+      padding-top: $spacing-xl;
       display: flex;
       gap: $spacing-xl;
       justify-content: space-between;
@@ -385,6 +382,21 @@ export default {
         color: #333;
         text-align: center;
       }
+
+      &__humidity {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 80px;
+
+        span {
+          width: fit-content;
+        }
+
+        #humidity {
+          color: $light-blue;
+        }
+      }
     }
   }
 
@@ -393,7 +405,8 @@ export default {
       width: 100%;
       border-collapse: collapse;
 
-      th, td {
+      th,
+      td {
         padding: 0 $spacing-md;
         text-align: center;
         border-bottom: 1px solid $light-gray;
@@ -445,13 +458,15 @@ export default {
   }
 
   .addition__point {
-    color: $secondary-accent;
+    color: $gray;
     font-size: $font-size-lg;
+
+    &-title {
+      margin-right: 2px;
+      color: $secondary-accent;
+    }
   }
 
-  .addition__point-value {
-    color: #333;
-  }
 
   #Capa_1 {
     margin-left: 3px;
@@ -466,6 +481,15 @@ export default {
       color: $secondary-accent;
       font-weight: 500;
     }
+
+  }
+}
+
+.tt-c {
+  font-size: larger;
+
+  @media(max-width:560px) {
+    display: none;
   }
 }
 </style>
